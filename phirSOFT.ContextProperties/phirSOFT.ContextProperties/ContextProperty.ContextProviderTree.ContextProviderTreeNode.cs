@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using phirSOFT.TopologicalComparison;
 
 namespace phirSOFT.ContextProperties
@@ -7,27 +8,49 @@ namespace phirSOFT.ContextProperties
     {
         private partial class ContextProviderTree
         {
-            internal class ContextProviderTreeNode : ITreeNode<IContextProvider<TValue, TValue>>
+            internal class ContextProviderTreeNode : ITreeNode<IContextProvider<TValue, TValue>>,
+                IEnumerable<IContextProvider<TValue, TValue>>
             {
-                private readonly List<ContextProviderTreeNode> children;
-                private readonly ContextProviderTree tree;
-                private ContextProviderTreeNode parent;
+                private readonly List<ContextProviderTreeNode> _children;
+                private readonly ContextProviderTree _tree;
 
-                public ContextProviderTreeNode(ContextProviderTree tree, IContextProvider<TValue,TValue> value)
+                public ContextProviderTreeNode(ContextProviderTree tree, IContextProvider<TValue, TValue> value)
                 {
-                    this.tree = tree;
-                    children = new List<ContextProviderTreeNode>();
+                    _tree = tree;
+                    _children = new List<ContextProviderTreeNode>();
                     Value = value;
+                }
+
+                public ContextProviderTreeNode Parent { get; private set; }
+
+                public IEnumerator<IContextProvider<TValue, TValue>> GetEnumerator()
+                {
+                    IEnumerable<IContextProvider<TValue, TValue>> EnumeratorChildren()
+                    {
+                        var currentNode = this;
+                        while (currentNode != null)
+                        {
+                            yield return currentNode.Value;
+                            currentNode = currentNode.Parent;
+                        }
+                    }
+
+                    return EnumeratorChildren().GetEnumerator();
+                }
+
+                IEnumerator IEnumerable.GetEnumerator()
+                {
+                    return GetEnumerator();
                 }
 
                 public ITreeNode<IContextProvider<TValue, TValue>> AddChild(IContextProvider<TValue, TValue> node)
                 {
-                    var child = new ContextProviderTreeNode(tree, node)
+                    var child = new ContextProviderTreeNode(_tree, node)
                     {
-                        parent = this
+                        Parent = this
                     };
-                    children.Add(child);
-                    tree.nodes.Add(node, child);
+                    _children.Add(child);
+                    _tree._nodes.Add(node, child);
 
                     return child;
                 }
@@ -35,22 +58,20 @@ namespace phirSOFT.ContextProperties
                 public void Detach(ITreeNode<IContextProvider<TValue, TValue>> child)
                 {
                     var node = (ContextProviderTreeNode) child;
-                    node.parent = null;
-                    children.Remove((ContextProviderTreeNode) node);
+                    node.Parent = null;
+                    _children.Remove(node);
                 }
 
                 public void Attach(ITreeNode<IContextProvider<TValue, TValue>> child)
                 {
-                    var node = (ContextProviderTreeNode)child;
-                    node.parent = this;
-                    children.Add((ContextProviderTreeNode)child);
+                    var node = (ContextProviderTreeNode) child;
+                    node.Parent = this;
+                    _children.Add((ContextProviderTreeNode) child);
                 }
 
                 public IContextProvider<TValue, TValue> Value { get; set; }
-                public IEnumerable<ITreeNode<IContextProvider<TValue, TValue>>> Children => children.AsReadOnly();
-                public ContextProviderTreeNode Parent => parent;
+                public IEnumerable<ITreeNode<IContextProvider<TValue, TValue>>> Children => _children.AsReadOnly();
             }
         }
     }
-  
 }

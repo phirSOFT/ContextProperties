@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace phirSOFT.ContextProperties
+﻿namespace phirSOFT.ContextProperties
 {
-    public class ContextProperty
+    public interface IContextProvider<out TValue, TPropertyValue> where TValue : TPropertyValue
     {
-        object this[object Context]
-        {
-            get => null;
-            set { throw new NotImplementedException(); }
-        }
+        TValue GetValue(object targetObject, ContextProperty<TPropertyValue> targetProperty);
+        bool OverridesValue(object targetObject, ContextProperty<TPropertyValue> targetProperty);
     }
 }
