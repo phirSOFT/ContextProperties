@@ -1,16 +1,16 @@
 ﻿namespace phirSOFT.ContextProperties
 {
-    public class ContextProviderProxy<T> : IContextProvider<T, T>
+    public class ContextProviderProxy<T> : IContextProvider<IContextProperty<T>, T>
     {
-        public IContextProvider<T, T> Provider { get; set; }
+        public IContextProvider<IContextProperty<T>, T> Provider { get; set; }
 
 
-        T IContextProvider<T, T>.GetValue(object targetObject, ContextProperty<T> targetProperty)
+        T IContextProvider<IContextProperty<T>, T>.GetValue(object targetObject, IContextProperty<T> targetProperty)
         {
             return Provider.GetValue(targetObject, targetProperty);
         }
 
-        bool IContextProvider<T, T>.OverridesValue(object targetObject, ContextProperty<T> targetProperty)
+        bool IContextProvider<IContextProperty<T>, T>.OverridesValue(object targetObject, IContextProperty<T> targetProperty)
         {
             return Provider.OverridesValue(targetObject, targetProperty);
         }

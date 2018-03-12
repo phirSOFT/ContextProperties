@@ -2,8 +2,11 @@
 
 namespace phirSOFT.ContextProperties
 {
-    public interface IContextPool<TValue> : ICollection<IContextProvider<TValue, TValue>>,
-        IReadOnlyDictionary<IContextProvider<TValue, TValue>, IEnumerable<IContextProvider<TValue, TValue>>>
+    public interface IContextPool<TProperty, TValue> : ICollection<IContextProvider<TProperty, TValue>>,
+        IReadOnlyDictionary<IContextProvider<TProperty, TValue>, IEnumerable<IContextProvider<TProperty, TValue>>>
+    where TProperty : IContextProperty<TValue>
     {
+
     }
+   
 }

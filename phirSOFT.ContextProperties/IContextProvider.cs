@@ -1,14 +1,14 @@
-﻿namespace phirSOFT.ContextProperties
+﻿using System.Net.Http.Headers;
+
+namespace phirSOFT.ContextProperties
 {
-    public interface IContextProvider<out TValue, TPropertyValue> where TValue : TPropertyValue
+    public interface IContextProvider<in TProperty, out TValue> where TProperty : IContextProperty<TValue>
     {
-        TValue GetValue(object targetObject, ContextProperty<TPropertyValue> targetProperty);
-        bool OverridesValue(object targetObject, ContextProperty<TPropertyValue> targetProperty);
+        TValue GetValue(object targetObject, TProperty targetProperty);
+        bool OverridesValue(object targetObject, TProperty targetProperty);
     }
 
-    public interface IIndexerContextProvider<out TValue, TKey, TPropertyValue> where TValue : TPropertyValue
+    public interface IContextProperty<TValue>
     {
-        IIndexer<TKey, TValue> GetValue(object targetObject, IndexerContextProperty<TKey, TPropertyValue> targetProperty);
-        bool OverridesValue(object targetObject, IndexerContextProperty<TKey, TPropertyValue> targetProperty);
     }
 }

@@ -8,13 +8,13 @@ namespace phirSOFT.ContextProperties
     {
         private partial class ContextProviderTree
         {
-            internal class ContextProviderTreeNode : ITreeNode<IContextProvider<TValue, TValue>>,
-                IEnumerable<IContextProvider<TValue, TValue>>
+            internal class ContextProviderTreeNode : ITreeNode<IContextProvider<ContextProperty<TValue>, TValue>>,
+                IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>>
             {
                 private readonly List<ContextProviderTreeNode> _children;
                 private readonly ContextProviderTree _tree;
 
-                public ContextProviderTreeNode(ContextProviderTree tree, IContextProvider<TValue, TValue> value)
+                public ContextProviderTreeNode(ContextProviderTree tree, IContextProvider<ContextProperty<TValue>, TValue> value)
                 {
                     _tree = tree;
                     _children = new List<ContextProviderTreeNode>();
@@ -23,9 +23,9 @@ namespace phirSOFT.ContextProperties
 
                 public ContextProviderTreeNode Parent { get; private set; }
 
-                public IEnumerator<IContextProvider<TValue, TValue>> GetEnumerator()
+                public IEnumerator<IContextProvider<ContextProperty<TValue>, TValue>> GetEnumerator()
                 {
-                    IEnumerable<IContextProvider<TValue, TValue>> EnumeratorChildren()
+                    IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>> EnumeratorChildren()
                     {
                         var currentNode = this;
                         while (currentNode != null)
@@ -43,7 +43,7 @@ namespace phirSOFT.ContextProperties
                     return GetEnumerator();
                 }
 
-                public ITreeNode<IContextProvider<TValue, TValue>> AddChild(IContextProvider<TValue, TValue> node)
+                public ITreeNode<IContextProvider<ContextProperty<TValue>, TValue>> AddChild(IContextProvider<ContextProperty<TValue>, TValue> node)
                 {
                     var child = new ContextProviderTreeNode(_tree, node)
                     {
@@ -55,22 +55,22 @@ namespace phirSOFT.ContextProperties
                     return child;
                 }
 
-                public void Detach(ITreeNode<IContextProvider<TValue, TValue>> child)
+                public void Detach(ITreeNode<IContextProvider<ContextProperty<TValue>, TValue>> child)
                 {
                     var node = (ContextProviderTreeNode) child;
                     node.Parent = null;
                     _children.Remove(node);
                 }
 
-                public void Attach(ITreeNode<IContextProvider<TValue, TValue>> child)
+                public void Attach(ITreeNode<IContextProvider<ContextProperty<TValue>, TValue>> child)
                 {
                     var node = (ContextProviderTreeNode) child;
                     node.Parent = this;
                     _children.Add((ContextProviderTreeNode) child);
                 }
 
-                public IContextProvider<TValue, TValue> Value { get; set; }
-                public IEnumerable<ITreeNode<IContextProvider<TValue, TValue>>> Children => _children.AsReadOnly();
+                public IContextProvider<ContextProperty<TValue>, TValue> Value { get; set; }
+                public IEnumerable<ITreeNode<IContextProvider<ContextProperty<TValue>, TValue>>> Children => _children.AsReadOnly();
             }
         }
     }

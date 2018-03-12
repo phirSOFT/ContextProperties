@@ -2,24 +2,24 @@
 
 namespace phirSOFT.ContextProperties
 {
-    public partial class ContextProperty<TValue>
+    public partial class ContextProperty<TValue> : IContextProperty<TValue>
     {
-        public ContextProperty(IContextProvider<TValue, TValue> defaultContext)
+        public ContextProperty(IContextProvider<ContextProperty<TValue>, TValue> defaultContext)
         {
             DefaultContext = defaultContext;
             ContextPool = new ContextProviderTree(defaultContext);
         }
 
-        public ContextProperty(IContextPool<TValue> contextPool)
+        public ContextProperty(IContextPool<ContextProperty<TValue>, TValue> contextPool)
         {
             ContextPool = contextPool;
         }
 
-        public IContextPool<TValue> ContextPool { get; }
+        public IContextPool<ContextProperty<TValue>, TValue> ContextPool { get; }
 
-        public IContextProvider<TValue, TValue> DefaultContext { get; set; }
+        public IContextProvider<ContextProperty<TValue>, TValue> DefaultContext { get; set; }
 
-        public TValue this[object target, IContextProvider<TValue, TValue> context] => ContextPool[context]
+        public TValue this[object target, IContextProvider<ContextProperty<TValue>, TValue> context] => ContextPool[context]
             .First(c => c.OverridesValue(target, this)).GetValue(target, this);
     }
 }

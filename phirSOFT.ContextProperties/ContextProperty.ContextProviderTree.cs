@@ -7,17 +7,18 @@ namespace phirSOFT.ContextProperties
 {
     public partial class ContextProperty<TValue>
     {
-        private partial class ContextProviderTree : ITree<IContextProvider<TValue, TValue>>, IContextPool<TValue>
+        private partial class ContextProviderTree : ITree<IContextProvider<ContextProperty<TValue>, TValue>>,
+            IContextPool<ContextProperty<TValue>, TValue>
         {
-            private readonly Dictionary<IContextProvider<TValue, TValue>, ContextProviderTreeNode> _nodes =
-                new Dictionary<IContextProvider<TValue, TValue>, ContextProviderTreeNode>();
+            private readonly Dictionary<IContextProvider<ContextProperty<TValue>, TValue>, ContextProviderTreeNode> _nodes = 
+                new Dictionary<IContextProvider<ContextProperty<TValue>, TValue>, ContextProviderTreeNode>();
 
-            public ContextProviderTree(IContextProvider<TValue, TValue> defaultContext)
+            public ContextProviderTree(IContextProvider<ContextProperty<TValue>, TValue> defaultContext)
             {
                 Root = new ContextProviderTreeNode(this, defaultContext);
             }
 
-            public void Add(IContextProvider<TValue, TValue> item)
+            public void Add(IContextProvider<ContextProperty<TValue>, TValue> item)
             {
                 this.Insert(item);
             }
@@ -25,20 +26,23 @@ namespace phirSOFT.ContextProperties
             public void Clear()
             {
                 var childNodes = Root.Children.ToList();
-                foreach (var childNode in childNodes) RemoveNode((ContextProviderTreeNode) childNode);
+                foreach (var childNode in childNodes)
+                {
+                    RemoveNode((ContextProviderTreeNode) childNode);
+                }
             }
 
-            public bool Contains(IContextProvider<TValue, TValue> item)
+            public bool Contains(IContextProvider<ContextProperty<TValue>, TValue> item)
             {
                 return _nodes.ContainsKey(item);
             }
 
-            public void CopyTo(IContextProvider<TValue, TValue>[] array, int arrayIndex)
+            public void CopyTo(IContextProvider<ContextProperty<TValue>, TValue>[] array, int arrayIndex)
             {
                 _nodes.Keys.CopyTo(array, arrayIndex);
             }
 
-            public bool Remove(IContextProvider<TValue, TValue> item)
+            public bool Remove(IContextProvider<ContextProperty<TValue>, TValue> item)
             {
                 var node = _nodes[item];
                 RemoveNode(node);
@@ -48,27 +52,27 @@ namespace phirSOFT.ContextProperties
             public int Count => _nodes.Count;
             public bool IsReadOnly => false;
 
-            IEnumerator<KeyValuePair<IContextProvider<TValue, TValue>, IEnumerable<IContextProvider<TValue, TValue>>>>
-                IEnumerable<KeyValuePair<IContextProvider<TValue, TValue>, IEnumerable<IContextProvider<TValue, TValue>>
+            IEnumerator<KeyValuePair<IContextProvider<ContextProperty<TValue>, TValue>, IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>>>>
+                IEnumerable<KeyValuePair<IContextProvider<ContextProperty<TValue>, TValue>, IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>>
                 >>.GetEnumerator()
             {
                 return _nodes.Select(kv =>
-                    new KeyValuePair<IContextProvider<TValue, TValue>, IEnumerable<IContextProvider<TValue, TValue>>>(
+                    new KeyValuePair<IContextProvider<ContextProperty<TValue>, TValue>, IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>>>(
                         kv.Key, kv.Value)).GetEnumerator();
             }
 
-            public IEnumerator<IContextProvider<TValue, TValue>> GetEnumerator()
+            public IEnumerator<IContextProvider<ContextProperty<TValue>, TValue>> GetEnumerator()
             {
                 return _nodes.Keys.GetEnumerator();
             }
 
-            public bool ContainsKey(IContextProvider<TValue, TValue> key)
+            public bool ContainsKey(IContextProvider<ContextProperty<TValue>, TValue> key)
             {
                 return _nodes.ContainsKey(key);
             }
 
-            public bool TryGetValue(IContextProvider<TValue, TValue> key,
-                out IEnumerable<IContextProvider<TValue, TValue>> value)
+            public bool TryGetValue(IContextProvider<ContextProperty<TValue>, TValue> key,
+                out IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>> value)
             {
                 var result = _nodes.TryGetValue(key, out var node);
                 value = node;
@@ -76,18 +80,18 @@ namespace phirSOFT.ContextProperties
             }
 
 
-            public IEnumerable<IContextProvider<TValue, TValue>> this[IContextProvider<TValue, TValue> key] =>
+            public IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>> this[IContextProvider<ContextProperty<TValue>, TValue> key] =>
                 _nodes[key];
 
-            public IEnumerable<IContextProvider<TValue, TValue>> Keys => _nodes.Keys;
-            public IEnumerable<IEnumerable<IContextProvider<TValue, TValue>>> Values => _nodes.Values;
+            public IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>> Keys => _nodes.Keys;
+            public IEnumerable<IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>>> Values => _nodes.Values;
 
             IEnumerator IEnumerable.GetEnumerator()
             {
                 return GetEnumerator();
             }
 
-            public ITreeNode<IContextProvider<TValue, TValue>> Root { get; }
+            public ITreeNode<IContextProvider<ContextProperty<TValue>, TValue>> Root { get; }
 
             private void RemoveNode(ContextProviderTreeNode node)
             {
