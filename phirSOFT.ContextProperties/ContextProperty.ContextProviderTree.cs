@@ -10,7 +10,7 @@ namespace phirSOFT.ContextProperties
         private partial class ContextProviderTree : ITree<IContextProvider<ContextProperty<TValue>, TValue>>,
             IContextPool<ContextProperty<TValue>, TValue>
         {
-            private readonly Dictionary<IContextProvider<ContextProperty<TValue>, TValue>, ContextProviderTreeNode> _nodes = 
+            private readonly Dictionary<IContextProvider<ContextProperty<TValue>, TValue>, ContextProviderTreeNode> _nodes =
                 new Dictionary<IContextProvider<ContextProperty<TValue>, TValue>, ContextProviderTreeNode>();
 
             public ContextProviderTree(IContextProvider<ContextProperty<TValue>, TValue> defaultContext)
@@ -28,7 +28,7 @@ namespace phirSOFT.ContextProperties
                 var childNodes = Root.Children.ToList();
                 foreach (var childNode in childNodes)
                 {
-                    RemoveNode((ContextProviderTreeNode) childNode);
+                    RemoveNode((ContextProviderTreeNode)childNode);
                 }
             }
 
@@ -80,8 +80,26 @@ namespace phirSOFT.ContextProperties
             }
 
 
-            public IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>> this[IContextProvider<ContextProperty<TValue>, TValue> key] =>
-                _nodes[key];
+            public IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>> this[IContextProvider<ContextProperty<TValue>, TValue> key]
+            {
+                get
+                {
+                    if (_nodes.ContainsKey(key))
+                        return _nodes[key];
+
+                    IContextProvider<ContextProperty<TValue>, TValue> lastFound = null;
+                    var comparer = TopologicalComparer<IContextProvider<ContextProperty<TValue>, TValue>>.Default;
+
+                    foreach (var nodesKey in _nodes.Keys)
+                    {
+                        if (comparer.TryCompare(nodesKey, key, out var result) && result < 0 &&
+                            comparer.Compare(nodesKey, lastFound) > 0)
+                            lastFound = nodesKey;
+                    }
+
+                    return lastFound == null ? new[] { key } : new[] { key }.Concat(_nodes[key]);
+                }
+            }
 
             public IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>> Keys => _nodes.Keys;
             public IEnumerable<IEnumerable<IContextProvider<ContextProperty<TValue>, TValue>>> Values => _nodes.Values;
