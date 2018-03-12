@@ -1,0 +1,47 @@
+skip_tags: true
+image: Visual Studio 2017
+configuration: Release
+
+install:
+  - cinst gitversion.portable
+  - nuget restore
+  - ps: gitversion /l console /output buildserver
+
+on_failure:
+  - ps: 7z a "WorkingTree.zip"
+  - ps: Push-AppveyorArtifact WorkingTree.zip
+
+branches:
+  only:
+  - master
+skip_tags: true
+image: Previous Visual Studio 2017
+configuration: Release
+
+dotnet_csproj:
+  patch: true
+  file: '**\*.csproj'
+  version: $(GitVersion_FullSemVer)
+  package_version: $(GitVersion_FullSemVer)
+  assembly_version: $(GitVersion_AssemblySemVer)
+  file_version: $(GitVersion_AssemblySemVer)
+  informational_version: $(GitVersion_FullSemVer)
+
+build:
+  publish_nuget: true
+  publish_nuget_symbols: true
+  include_nuget_references: true
+  parallel: true
+  verbosity: minimal
+
+deploy:
+- provider: GitHub
+  auth_token:
+    secure: ZvTtnn5kbeHhsXChh6HJUqgZl8zZT6y0AAukf+qrnUR2YTHiL8hQ0OLh9JF/HrMA
+  on:
+    branch: master
+- provider: NuGet
+  api_key:
+    secure: mEnZ6nrlfa2Ex86ylJLvF3rauxoJseJoRikkwK9RqBXW6P9ywn+CfMRKRZs0gvFV
+  on:
+    branch: master
