@@ -88,7 +88,7 @@ namespace phirSOFT.ContextProperties
                         return _nodes[key];
 
                     IContextProvider<IContextProperty<TValue>, TValue> lastFound = null;
-                    var comparer = TopologicalComparer<IContextProvider<IContextProperty<TValue>, TValue>>.Default;
+                    var comparer = new ContextProviderComparer();
 
                     foreach (var nodesKey in _nodes.Keys)
                     {
