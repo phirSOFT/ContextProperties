@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace phirSOFT.ContextProperties
@@ -11,5 +10,7 @@ namespace phirSOFT.ContextProperties
     public interface IMemberContextProperty<TValue>
     {
         TValue this[IContextProvider<IContextProperty<TValue>, TValue> context] { get; }
+
+        TValue Value { get; }
     }
 }
