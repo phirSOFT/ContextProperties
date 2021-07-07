@@ -7,8 +7,4 @@ namespace phirSOFT.ContextProperties
         TValue GetValue(object targetObject, TProperty targetProperty);
         bool OverridesValue(object targetObject, TProperty targetProperty);
     }
-
-    public interface IContextProperty<TValue>
-    {
-    }
 }
