@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="phirSOFT.TopologicalComparison" Version="0.0.14" />
+    <PackageReference Include="phirSOFT.TopologicalComparison" Version="0.2.4+6" />
   </ItemGroup>
 
 </Project>
